@@ -33,6 +33,11 @@ export default {
           text: 'Home',
           page: '/',
         },
+        {
+          id: 1,
+          text: 'Register',
+          page: '/registration',
+        },
       ],
     };
   },

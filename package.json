@@ -11,15 +11,24 @@
     "axios": "^0.21.1",
     "bootstrap": "^5.0.2",
     "core-js": "^3.6.5",
-    "vue": "^2.6.11"
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-vue": "^0.11.0",
+    "vue": "^2.6.11",
+    "vue-date-dropdown": "^1.0.5",
+    "vuetify": "^2.5.6"
   },
   "devDependencies": {
+    "@nuxtjs/vuetify": "^1.12.1",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
+    "deepmerge": "^4.2.2",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
+    "sass": "^1.32.13",
+    "sass-loader": "^12.1.0",
+    "vee-validate": "^3.4.10",
     "vue-router": "^3.5.2",
     "vue-template-compiler": "^2.6.11"
   },
