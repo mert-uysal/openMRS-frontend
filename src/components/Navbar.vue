@@ -38,6 +38,11 @@ export default {
           text: 'Register',
           page: '/registration',
         },
+        {
+          id: 2,
+          text: 'Login',
+          page: '/login',
+        },
       ],
     };
   },
