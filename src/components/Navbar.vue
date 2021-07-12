@@ -35,13 +35,23 @@ export default {
         },
         {
           id: 1,
+          text: 'Homepage',
+          page: '/home',
+        },
+        {
+          id: 2,
           text: 'Register',
           page: '/registration',
         },
         {
-          id: 2,
+          id: 3,
           text: 'Login',
           page: '/login',
+        },
+        {
+          id: 4,
+          text: 'Doctor Register',
+          page: '/docRegistration',
         },
       ],
     };

@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+  <div class="d-flex flex-column w-auto p-3 h-auto d-inline-block justify-content-center align-items-center">
     <div class="card">
       <sui-form>
         <sui-header dividing class="mt-1">Hasta Bilgileri</sui-header>
@@ -82,26 +82,26 @@
             <i class="fas fa-plus"></i>
           </a>
         </sui-header>
-        <sui-form-field v-for="(relative, index) in familyMembers" :key="relative.identityNum">
+        <sui-form-field v-for="(relative, index) in familyMembers" :key="relative">
+          <a href="#" class="action button position-absolute end-0 me-2" @click="deleteRelative(index)">
+            <i class="fas fa-minus"></i>
+          </a>
           <sui-form-fields fields="two" class="ms-2 me-2">
-            <a href="#" class="action button position-absolute end-0 me-2" @click="deleteRelative(index)">
-              <i class="fas fa-minus"></i>
-            </a>
-            <sui-form-field>
-              <label>Kimlik Numarası</label>
-              <input
-                  type="text"
-                  placeholder="Kimlik numarası"
-                  v-model="relative.identityNum"
-              />
-            </sui-form-field>
             <sui-form-field>
               <label>Akrabalık Derecesi</label>
               <sui-dropdown
                   placeholder="Akrabalık Derecesi"
                   selection
                   :options="relativeType"
-                  v-model="relative.relativeType"
+                  v-model="familyMembers[index].relativeType"
+              />
+            </sui-form-field>
+            <sui-form-field>
+              <label>Kimlik Numarası</label>
+              <input
+                  type="text"
+                  placeholder="Kimlik numarası"
+                  v-model="familyMembers[index].identityNum"
               />
             </sui-form-field>
           </sui-form-fields>
@@ -111,7 +111,7 @@
               <input
                   type="text"
                   placeholder="İsim"
-                  v-model="relative.firstName"
+                  v-model="familyMembers[index].firstName"
               />
             </sui-form-field>
             <sui-form-field>
@@ -119,7 +119,7 @@
               <input
                   type="text"
                   placeholder="Soyisim"
-                  v-model="relative.lastName"
+                  v-model="familyMembers[index].lastName"
               />
             </sui-form-field>
           </sui-form-fields>
@@ -156,12 +156,7 @@ export default {
         patientAddress: "",
         patientFamilyMember: "",
       },
-      familyMembers: [/*{
-        identityNum: "",
-        relativeType: "",
-        firstName: "",
-        lastName: "",
-      }*/],
+      familyMembers: [],
       gender: [
         {
           text: 'Erkek',
@@ -199,14 +194,16 @@ export default {
       })
     },
     deleteRelative(index) {
-      this.familyMembers.splice(this.familyMembers.indexOf(index),1)
+      this.familyMembers.splice(this.familyMembers.indexOf(index), 1)
     },
     format_date(value) {
       return moment(value, 'DD.MM.YYYY').format('YYYY-MM-DD');
     },
     registerPatient() {
-      this.patient.patientFamilyMember += this.familyMembers.identityNum + " - " + this.familyMembers.firstName + " - " +
-          this.familyMembers.lastName + " - " + this.familyMembers.relativeType + "\n";
+      this.familyMembers.forEach((relative) => {
+        this.patient.patientFamilyMember += relative.identityNum + " - " + relative.firstName + " - " +
+            relative.lastName + " - " + relative.relativeType + "\n";
+      });
       this.patient.patientDateOfBirt = this.format_date(this.patient.patientDateOfBirt);
       axios.post('http://localhost:8081/api/patients/add', this.patient)
           .then((response) => {
