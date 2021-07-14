@@ -12,13 +12,13 @@
           </li>
         </ul>
         <div class="d-flex">
-          <span> {{ currentUser.username }} </span>
           <ul class="navbar-nav">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle"
                  href="#" id="navbarDropdown" role="button"
                  data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-user-md fa-2x"></i>
+                <i class="fas fa-user-md"></i>
+                <span style="color: white"> {{ userData.doctorFirstName }} {{userData.doctorLastName}} </span>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 <li><a class="dropdown-item" href="#"
@@ -84,6 +84,7 @@ export default {
     return {
       currentUser: {},
       showLogOutMessage: false,
+      userData: {},
       links: [
         {
           id: 0,
@@ -113,8 +114,9 @@ export default {
       ],
     };
   },
-  created() {
-    console.log(this.$route.path);
+  mounted() {
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    this.userData = JSON.parse(localStorage.getItem('userData'));
   },
   computed: {
     currentRoute() {

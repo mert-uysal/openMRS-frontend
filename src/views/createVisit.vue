@@ -29,6 +29,7 @@
         </sui-form-fields>
       </sue-form>
     </div>
+    <button @click="temp()">bas</button>
   </div>
 </template>
 
@@ -72,6 +73,12 @@ export default {
           console.log("getting all doctors failed.")
           console.log(error);
         });
+  },
+  methods: {
+    temp() {
+      console.log(this.allDoctors);
+      console.log(this.allPatients);
+    }
   }
 }
 </script>

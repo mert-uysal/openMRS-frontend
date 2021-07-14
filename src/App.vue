@@ -30,7 +30,7 @@ export default {
   methods: {
     checkLoginStatus() {
       this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      if (this.currentUser === null) {
+      if (this.currentUser === null && this.$route.path === ('/')) {
         this.$router.push('/login');
       } else {
         this.getUserData();
