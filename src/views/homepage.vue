@@ -2,13 +2,13 @@
   <div class="container">
     <div class="row row-cols-2 row-cols-lg-3">
       <div class="col">
-        <sui-button class="main-button">
+        <sui-button class="main-button" @click.prevent="$router.push('/findPatient')">
           <i class="fas fa-search fa-3x position-absolute top-0 start-50 translate-middle-x icon-m"></i>
           <p class="button-description description-m">Hasta Ara</p>
         </sui-button>
       </div>
       <div class="col">
-        <sui-button class="main-button">
+        <sui-button class="main-button" @click.prevent="$router.push('/patientRegister')">
           <i class="material-icons position-absolute top-0 start-50 translate-middle-x icon-m"
              style="font-size:48px;">how_to_reg</i>
           <p class="button-description description-m">Hasta Kayıt</p>
@@ -21,7 +21,7 @@
         </sui-button>
       </div>
       <div class="col">
-        <sui-button class="main-button">
+        <sui-button class="main-button" @click.prevent="$router.push('/createVisit')">
           <i class="far fa-calendar-plus fa-3x position-absolute top-0 start-50 translate-middle-x icon-m"></i>
           <p class="button-description description-m">Visit Oluştur</p>
         </sui-button>

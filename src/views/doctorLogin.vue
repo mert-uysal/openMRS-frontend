@@ -14,7 +14,7 @@
           :value="dismissCountDown"
           height="4px"></b-progress>
     </b-alert>
-    <div class="ui middle aligned center aligned grid">
+    <div class="ui middle aligned center aligned grid mt-5">
       <div class="column">
         <h2 class="ui image header">
           <div class="content">
@@ -32,7 +32,7 @@
             <div class="field">
               <div class="ui left icon input">
                 <i class="lock icon"></i>
-                <input v-on:keyup.enter="login()" type="password" name="password" placeholder="Parola"
+                <input v-on:keyup.enter="login(); showAlert()" type="password" name="password" placeholder="Parola"
                        v-model="userInfo.userPassword">
               </div>
             </div>
@@ -98,17 +98,17 @@ export default {
             console.log(response);
             this.message = response.data.message;
             this.isLoggedinSuccessfully = response.data.success;
-            if(this.isLoggedinSuccessfully){
+            if (this.isLoggedinSuccessfully) {
               this.variant = this.success;
-            }
-            else {
+            } else {
               this.variant = this.danger;
-              if(this.userInfo.username === "" || this.userInfo.userPassword === ""){
+              if (this.userInfo.username === "" || this.userInfo.userPassword === "") {
                 this.message = "Kullanıcı adı veya şifre boş bırakılamaz."
               }
             }
-            localStorage.setItem('currentUser', JSON.stringify(this.userInfo));
             if (this.message === "Kullanıcı Girişi Başarılı.") {
+              this.userInfo.userIdentityNum = response.data.data.userIdentityNum;
+              localStorage.setItem('currentUser', JSON.stringify(this.userInfo));
               window.setTimeout(this.pushRouter, 3000);
             }
           })
@@ -118,7 +118,7 @@ export default {
           });
     },
     pushRouter() {
-      this.$router.push('/');
+      this.$router.push('/home');
     },
     showAlert() {
       this.dismissCountDown = this.dismissSecs;
@@ -155,4 +155,5 @@ body > .grid {
   border-radius: 25px;
   width: 10rem;
 }
+
 </style>
