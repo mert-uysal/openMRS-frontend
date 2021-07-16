@@ -115,7 +115,7 @@
           </sui-form-field>
         </sui-form>
         <div>
-          <button class="btn btn-primary mb-2" @click="registerDoctor()">Kaydet</button>
+          <button class="btn btn-primary mb-2" @click="registerDoctor(); showAlert()">Kaydet</button>
         </div>
       </div>
     </div>
@@ -184,7 +184,11 @@ export default {
             this.message = response.data.message;
             if(response.data.success){
               this.variant = this.success;
+              this.showNotify = true;
               window.setTimeout(this.pushRouter, 3000);
+            }
+            else {
+              this.variant = this.danger;
             }
           })
           .catch(error => {

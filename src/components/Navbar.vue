@@ -87,28 +87,23 @@ export default {
       userData: {},
       links: [
         {
-          id: 0,
-          text: 'Home',
-          page: '/helloWorld',
-        },
-        {
           id: 1,
-          text: 'Homepage',
+          text: 'Anasayfa',
           page: '/home',
         },
         {
           id: 2,
-          text: 'Patient Register',
+          text: 'Hasta Kayıt',
           page: '/patientRegister',
         },
         {
           id: 3,
-          text: 'Login',
-          page: '/login',
+          text: 'Hasta Arama',
+          page: '/findPatient',
         },
         {
           id: 4,
-          text: 'Doctor Register',
+          text: 'Doktor Kayıt',
           page: '/docRegistration',
         },
       ],
@@ -142,6 +137,7 @@ export default {
       window.setTimeout(this.pushRouter, 2000);
     },
     pushRouter() {
+      console.log("reloadladım xd");
       window.location.reload();
       this.showLogOutMessage = false;
     },

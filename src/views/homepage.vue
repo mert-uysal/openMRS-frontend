@@ -15,7 +15,7 @@
         </sui-button>
       </div>
       <div class="col">
-        <sui-button class="main-button">
+        <sui-button class="main-button" @click.prevent="$router.push('/displayVisits')">
           <i class="far fa-calendar-check fa-3x position-absolute top-0 start-50 translate-middle-x icon-m"></i>
           <p class="button-description description-m">Visitler</p>
         </sui-button>
@@ -49,7 +49,7 @@ export default {
   name: "homepage",
   data() {
     return {
-      
+
     }
   }
 }

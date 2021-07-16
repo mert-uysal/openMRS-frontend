@@ -1,17 +1,11 @@
 <template>
   <div class="container">
-    <div class="row align-items-center justify-content-center mb-3">
+    <div class="row align-items-center justify-content-center">
       <div class="col-auto">
-        <label for="questionInput">Hasta Kimlik Numarası:</label>
+        <label class="mt-2">Hasta Ara:</label>
       </div>
       <div class="col-4">
-        <input class="form-control"
-               id="questionInput" type="text" v-model="searchedPatientId"/>
-      </div>
-      <div class="col-auto">
-        <button class="btn btn-success"
-                @click="searchPatient()">Hasta Ara
-        </button>
+        <input class="form-control" type="text" v-model="filter"/>
       </div>
     </div>
     <sui-table celled>
@@ -26,7 +20,7 @@
       </sui-table-header>
 
       <sui-table-body>
-        <sui-table-row v-for="(patient) in allPatientsList" :key="patient.patientIdentityNum">
+        <sui-table-row v-for="(patient) in filteredRows" :key="patient.id">
             <sui-table-cell>
               <sui-label ribbon type="button" class="id-button" @click="displayPatient(patient.patientIdentityNum)">
                 {{ patient.patientIdentityNum }}</sui-label>
@@ -68,12 +62,24 @@ export default {
   data() {
     return {
       patientId: "",
-      allPatientsList: null,
-      searchedPatientId: "",
+      allPatientsList: [],
+      filter: "",
     }
   },
   created() {
     this.getAllPatients();
+  },
+  computed: {
+    filteredRows() {
+      return this.allPatientsList.filter(row => {
+        const idNo = row.patientIdentityNum.toString().toLowerCase();
+        const name = row.patientFirstName.toString().toLowerCase()+ " " + row.patientLastName.toString().toLowerCase();
+        const searchTerm = this.filter.toLowerCase();
+
+        return idNo.includes(searchTerm) ||
+            name.includes(searchTerm);
+      });
+    }
   },
   methods: {
     getAllPatients() {
@@ -88,9 +94,6 @@ export default {
           this.allPatientsList[index]['patientAge'] = curYear - tempYear;
         });
       });
-    },
-    searchPatient() {
-      console.log(this.allPatientsList);
     },
     displayPatient(patientId) {
       this.$router.push({

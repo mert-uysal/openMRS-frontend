@@ -109,7 +109,7 @@ export default {
             if (this.message === "Kullanıcı Girişi Başarılı.") {
               this.userInfo.userIdentityNum = response.data.data.userIdentityNum;
               localStorage.setItem('currentUser', JSON.stringify(this.userInfo));
-              window.setTimeout(this.pushRouter, 3000);
+              window.setTimeout(this.pushRouter, 2000);
             }
           })
           .catch(error => {

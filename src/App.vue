@@ -20,7 +20,8 @@ export default {
   },
   created() {
     this.checkLoginStatus();
-    this.checkUserdata();
+    //this.checkUserdata();
+    console.log("currnet user: " + this.currentUser);
   },
   watch: {
     $route() {
@@ -30,32 +31,34 @@ export default {
   methods: {
     checkLoginStatus() {
       this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      if (this.currentUser === null && this.$route.path === ('/')) {
-        this.$router.push('/login');
+      if (!this.currentUser) {
+        if (this.$route.name !== 'doctorRegister' && this.$route.name !== 'doctorLogin') {
+          this.$router.push('/login');
+        }
       } else {
         this.getUserData();
-        if (this.$route.path === '/login' || this.$route.path === '/docRegistration') {
+        if (this.$route.name === 'doctorLogin') {
           this.$router.push('/home');
         }
       }
     },
     checkUserdata() {
       this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      if(this.currentUser === null) {
+      if (this.currentUser === null) {
         this.getUserData();
       }
     },
     getUserData() {
       axios.post('http://localhost:8081/api/login/', this.currentUser)
-      .then((response) => {
-        console.log("getting user data success")
-        this.userData = response.data.data;
-        localStorage.setItem('userData', JSON.stringify(this.userData));
-      })
-      .catch(error => {
-        console.log("getting user data failed");
-        console.log(error);
-      })
+          .then((response) => {
+            console.log("getting user data success")
+            this.userData = response.data.data;
+            localStorage.setItem('userData', JSON.stringify(this.userData));
+          })
+          .catch(error => {
+            console.log("getting user data failed");
+            console.log(error);
+          })
     },
   },
 }

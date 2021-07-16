@@ -5,11 +5,6 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: "/helloWord",
-        name: "HelloWorld",
-        component: () => import('./components/HelloWorld.vue'),
-    },
-    {
         path: "/home",
         name: "homepage",
         component: () => import('./views/homepage.vue'),
@@ -44,6 +39,12 @@ const routes = [
         path: "/createVisit",
         name: "createVisit",
         component: () => import('./views/createVisit.vue'),
+        props: true,
+    },
+    {
+        path: "/displayVisits",
+        name: "displayVisits",
+        component: () => import('./views/displayVisits.vue'),
         props: true,
     },
 ];
