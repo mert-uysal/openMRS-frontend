@@ -5,7 +5,7 @@ Vue.use(VueRouter);
 
 const routes = [
     {
-        path: "/home",
+        path: "/",
         name: "homepage",
         component: () => import('./views/homepage.vue'),
     },

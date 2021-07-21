@@ -13,7 +13,7 @@
                   <label>Kimlik Numarası</label>
                   <input
                       type="text"
-                      :value="patientInfo.patientIdentityNum"
+                      v-model="patientInfo.patientIdentityNum"
                       disabled
                   />
                 </sui-form-field>
@@ -22,7 +22,7 @@
                   <input
                       type="text"
                       :value="patientInfo.patientFirstName + ' ' + patientInfo.patientLastName"
-                      disabled
+                      :disabled="isEditable === false"
                   />
                 </sui-form-field>
               </sui-form-fields>
@@ -32,17 +32,17 @@
                 <sui-form-field>
                   <label>Cinsiyet</label>
                   <input
+                      :disabled="isEditable === false"
                       type="text"
-                      :value="patientInfo.patientGender"
-                      disabled
+                      v-model="patientInfo.patientGender"
                   />
                 </sui-form-field>
                 <sui-form-field>
                   <label>Doğum Tarihi</label>
                   <input
+                      :disabled="isEditable === false"
                       type="text"
-                      :value="patientInfo.patientDateOfBirt"
-                      disabled
+                      v-model="patientInfo.patientDateOfBirt"
                   />
                 </sui-form-field>
               </sui-form-fields>
@@ -52,17 +52,17 @@
                 <sui-form-field>
                   <label>Telefon</label>
                   <input
+                      :disabled="isEditable === false"
                       type="text"
-                      :value="patientInfo.patientPhoneNum"
-                      disabled
+                      v-model="patientInfo.patientPhoneNum"
                   />
                 </sui-form-field>
                 <sui-form-field>
                   <label>Email</label>
                   <input
+                      :disabled="isEditable === false"
                       type="text"
-                      :value="patientInfo.patientEmail"
-                      disabled
+                      v-model="patientInfo.patientEmail"
                   />
                 </sui-form-field>
               </sui-form-fields>
@@ -72,17 +72,17 @@
                 <sui-form-field>
                   <label>Aile Bilgisi</label>
                   <input
+                      :disabled="isEditable === false"
                       type="text"
-                      :value="patientInfo.patientFamilyMember"
-                      disabled
+                      v-model="patientInfo.patientFamilyMember"
                   />
                 </sui-form-field>
                 <sui-form-field>
                   <label>Adres Bilgisi</label>
                   <input
+                      :disabled="isEditable === false"
                       type="text"
-                      :value="patientInfo.patientAddress"
-                      disabled
+                      v-model="patientInfo.patientAddress"
                   />
                 </sui-form-field>
               </sui-form-fields>
@@ -90,15 +90,50 @@
           </sui-form>
         </div>
         <div class="card-footer d-flex flex-row-reverse bd-highlight">
-          <a href="#" class="p-2 bd-highlight">
+          <div class="hoverDiv bd-highlight mt-1">
+            <i class='bx bx-chevron-right-circle bx-fade-right bx-md'></i>
+          </div>
+          <span style="cursor: pointer; border-radius: 15px;" class="btn-outline-primary p-2 bd-highlight me-2"
+                @click="deletePatient()">
             <i class="material-icons">delete</i>
-          </a>
-          <a href="#" class="p-2 bd-highlight">
+          </span>
+          <span style="cursor: pointer; border-radius: 15px;" class="btn-outline-primary p-2 bd-highlight me-2"
+                @click="savePatient()">
             <i class="material-icons">save</i>
-          </a>
-          <a href="#" class="p-2 bd-highlight">
-            <i class="material-icons">edit_note</i>
-          </a>
+          </span>
+          <span style="cursor: pointer; border-radius: 15px;" class="btn-outline-primary p-2 bd-highlight me-2"
+                @click="changeEditable()">
+            <span class="material-icons">edit_note</span>
+          </span>
+          <button class="me-5" @click="temp()">bas</button>
+        </div>
+        <div class="container slideCard">
+          <div class="card">
+            <button class="btn btn-outline-primary">
+              <i class='bx bx-calendar-check bx-lg'></i></button>
+            <button class="btn btn-outline-primary">
+              <i class='bx bxs-calendar bx-lg'></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- değişiklik modal -->
+    <div class="modal fade" id="changesModal" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1"
+         aria-labelledby="changesModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changesModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Kaydedilmemiş Değişiklikler Var. İptal Etmek İstiyor Musunuz?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            <button type="button" class="btn btn-danger" @click="$router.go()">İptal Et</button>
+          </div>
         </div>
       </div>
     </div>
@@ -107,13 +142,36 @@
 
 <script>
 import axios from "axios";
+import {Modal} from 'bootstrap'
 
 export default {
   name: "displaySelectedPatient",
+  beforeRouteLeave(to, from, next) {
+    // const answer = window.confirm('Kaydedilmemiş Değişiklikler Var. İptal Etmek İstiyor Musunuz?')
+    // if (answer) {
+    //   next()
+    // } else {
+    //   next(false)
+    // }
+    this.checkChanges();
+    const myModal = new Modal(document.getElementById('changesModal'), {
+      keyboard: false
+    });
+    if (this.anyChange) {
+      myModal.show();
+      next(false);
+    } else {
+      next();
+    }
+  },
   data() {
     return {
-      identityNum: "",
       patientInfo: {},
+      tempPatientInfo: {},
+      identityNum: "",
+      isEditable: false,
+      anyChange: false,
+      nextPage: null,
     }
   },
   mounted() {
@@ -128,10 +186,82 @@ export default {
           console.log("getting patient info failed");
           console.log(error);
         });
+  },
+  watch: {
+    $route() {
+      this.checkChanges();
+    },
+  },
+  methods: {
+    changeEditable() {
+      this.tempPatientInfo = JSON.parse(JSON.stringify(this.patientInfo));
+      this.isEditable = !this.isEditable;
+    },
+    checkChanges() {
+      if (!(Object.keys(this.tempPatientInfo).length === 0 && this.tempPatientInfo.constructor === Object)) { //if not null
+        if (JSON.stringify(this.tempPatientInfo) !== JSON.stringify(this.patientInfo)) {
+          console.log("değişiklik var");
+          this.anyChange = true;
+        }
+      } else {
+        console.log("değişiklik yok");
+        this.anyChange = false;
+      }
+    },
+    temp() {
+      console.log(this.patientInfo);
+      console.log(this.tempPatientInfo);
+    }
   }
 }
 </script>
 
 <style scoped>
+.container {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+}
+
+.card {
+  position: relative;
+}
+
+.slideCard {
+  display: flex;
+  left: 5%;
+  top: -50%;
+  width: 7.5rem;
+  height: 8.2rem;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  position: absolute;
+}
+
+.hoverDiv {
+  position: relative;
+}
+
+.slideCard:hover {
+  animation: myMove 2s;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+}
+
+.material-icons {
+  display: flex;
+  align-items: center;
+}
+
+@keyframes myMove {
+  from {
+    left: 0;
+  }
+  to {
+    left: 100px;
+  }
+}
 
 </style>

@@ -21,7 +21,7 @@ export default {
   created() {
     this.checkLoginStatus();
     //this.checkUserdata();
-    console.log("currnet user: " + this.currentUser);
+    console.log("current user: " + this.currentUser);
   },
   watch: {
     $route() {
@@ -38,7 +38,7 @@ export default {
       } else {
         this.getUserData();
         if (this.$route.name === 'doctorLogin') {
-          this.$router.push('/home');
+          this.$router.push('/');
         }
       }
     },

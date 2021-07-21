@@ -118,7 +118,7 @@ export default {
           });
     },
     pushRouter() {
-      this.$router.push('/home');
+      this.$router.push('/');
     },
     showAlert() {
       this.dismissCountDown = this.dismissSecs;

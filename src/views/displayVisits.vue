@@ -173,7 +173,7 @@
                     <label>Visit Açıklaması</label>
                     <textarea
                         type="text"
-                        :value="editedVisitObj.visitDescription"
+                        v-model="editedVisitObj.visitDescription"
                     />
                   </sui-form-field>
                 </sui-form-fields>
@@ -181,6 +181,7 @@
             </sui-form>
           </div>
           <div class="modal-footer">
+            <button @click="temp()">bas</button>
             <div is="sui-button-group">
               <sui-button type="button" data-bs-dismiss="modal">Cancel</sui-button>
               <sui-button-or/>
@@ -330,8 +331,8 @@ export default {
       this.dismissCountDown = dismissCountDown;
     },
     temp() {
-      this.allVisits[0].visitDate = this.allVisits[0].visitDate.replace("T", " ");
-      console.log(this.allVisits[0].visitDate);
+      console.log(this.allVisits[0]);
+      console.log(this.editedVisitObj);
     }
   }
 }

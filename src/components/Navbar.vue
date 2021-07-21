@@ -89,7 +89,7 @@ export default {
         {
           id: 1,
           text: 'Anasayfa',
-          page: '/home',
+          page: '/',
         },
         {
           id: 2,
@@ -137,7 +137,6 @@ export default {
       window.setTimeout(this.pushRouter, 2000);
     },
     pushRouter() {
-      console.log("reloadladım xd");
       window.location.reload();
       this.showLogOutMessage = false;
     },
