@@ -71,7 +71,9 @@
               <sui-form-fields fields="two" class="ms-2 me-2">
                 <sui-form-field>
                   <label>Aile Bilgisi</label>
-                  <input
+                  <textarea
+                      style="height: auto"
+                      rows="3"
                       :disabled="isEditable === false"
                       type="text"
                       v-model="patientInfo.patientFamilyMember"
@@ -79,7 +81,9 @@
                 </sui-form-field>
                 <sui-form-field>
                   <label>Adres Bilgisi</label>
-                  <input
+                  <textarea
+                      style="height: auto"
+                      rows="3"
                       :disabled="isEditable === false"
                       type="text"
                       v-model="patientInfo.patientAddress"
@@ -90,7 +94,7 @@
           </sui-form>
         </div>
         <div class="card-footer d-flex flex-row-reverse bd-highlight">
-          <div class="hoverDiv bd-highlight mt-1">
+          <div class="bd-highlight mt-1">
             <i class='bx bx-chevron-right-circle bx-fade-right bx-md'></i>
           </div>
           <span style="cursor: pointer; border-radius: 15px;" class="btn-outline-primary p-2 bd-highlight me-2"
@@ -107,16 +111,24 @@
           </span>
           <button class="me-5" @click="temp()">bas</button>
         </div>
-        <div class="container slideCard">
-          <div class="card">
-            <button class="btn btn-outline-primary">
+      </div>
+    </div>
+    <div class="container">
+      <div class="slideCard">
+        <div class="row">
+          <div class="d-flex align-items-start flex-column bd-highlight col-7">
+            <button class="p-2 bd-highlight btn btn-outline-primary mb-3 mt-3">
               <i class='bx bx-calendar-check bx-lg'></i></button>
-            <button class="btn btn-outline-primary">
+            <button class="p-2 bd-highlight btn btn-outline-primary mb-3">
               <i class='bx bxs-calendar bx-lg'></i></button>
+          </div>
+          <div class="d-flex align-items-center justify-content-center col-5">
+            <i class='bx bx-chevron-right-circle bx-fade-right bx-md'></i>
           </div>
         </div>
       </div>
     </div>
+
     <!-- değişiklik modal -->
     <div class="modal fade" id="changesModal" data-bs-backdrop="static" data-bs-keyboard="false"
          tabindex="-1"
@@ -229,19 +241,14 @@ export default {
 }
 
 .slideCard {
-  display: flex;
-  left: 5%;
-  top: -50%;
-  width: 7.5rem;
-  height: 8.2rem;
+  left: 60%;
+  /*width: 7.5rem;
+  height: 8.7rem;*/
+  /*display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: -1;
+  justify-content: center;*/
+  /*  z-index: -1;*/
   position: absolute;
-}
-
-.hoverDiv {
-  position: relative;
 }
 
 .slideCard:hover {
