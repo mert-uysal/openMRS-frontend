@@ -17,6 +17,7 @@
     <div class="ui middle aligned center aligned grid mt-5">
       <div class="column">
         <h2 class="ui image header">
+        <img :src="heartIcon" alt="heart" class="heart"/>
           <div class="content">
             Hesabınıza Giriş Yapın
           </div>
@@ -55,11 +56,13 @@
 
 <script>
 import axios from "axios";
+import heart from "../assets/heart.png"
 
 export default {
   name: "doctorLogin",
   data() {
     return {
+      heartIcon: heart,
       userInfo: {
         userIdentityNum: "1",
         username: "",
@@ -156,4 +159,9 @@ body > .grid {
   width: 10rem;
 }
 
+.heart {
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+}
 </style>

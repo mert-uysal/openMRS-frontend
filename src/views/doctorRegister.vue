@@ -28,6 +28,7 @@
                     placeholder="Kimlik numarası"
                     v-model="doctor.doctorIdentityNum"
                 />
+                <span v-if="checkEmpty">Bu Alan Boş Bırakılamaz!</span>
               </sui-form-field>
               <sui-form-field>
                 <label>İsim</label>
@@ -36,6 +37,7 @@
                     placeholder="İsim"
                     v-model="doctor.doctorFirstName"
                 />
+                <span v-if="checkEmpty">Bu Alan Boş Bırakılamaz!</span>
               </sui-form-field>
               <sui-form-field>
                 <label>Soyisim</label>
@@ -44,6 +46,7 @@
                     placeholder="Soyisim"
                     v-model="doctor.doctorLastName"
                 />
+                <span v-if="checkEmpty">Bu Alan Boş Bırakılamaz!</span>
               </sui-form-field>
             </sui-form-fields>
             <sui-form-fields fields="three" class="ms-1 me-3">
@@ -102,6 +105,7 @@
                     placeholder="Kullanıcı Adı"
                     v-model="doctor.username"
                 />
+                <span v-if="checkEmpty">Bu Alan Boş Bırakılamaz!</span>
               </sui-form-field>
               <sui-form-field>
                 <label>Parola</label>
@@ -110,6 +114,7 @@
                     placeholder="Parola"
                     v-model="doctor.userPassword"
                 />
+                <span v-if="checkEmpty">Bu Alan Boş Bırakılamaz!</span>
               </sui-form-field>
             </sui-form-fields>
           </sui-form-field>
@@ -168,6 +173,7 @@ export default {
       warning: "warning",
       danger: "danger",
       info: "info",
+      checkEmpty: false,
     }
   },
   methods: {
@@ -175,6 +181,15 @@ export default {
       return moment(value, 'DD.MM.YYYY').format('YYYY-MM-DD');
     },
     registerDoctor() {
+      if (
+          !this.doctor.doctorIdentityNum
+          || !this.doctor.doctorFirstName
+          || !this.doctor.doctorLastName
+          || !this.doctor.username
+          || !this.doctor.userPassword) {
+        this.checkEmpty = true;
+        return;
+      }
       this.doctor.doctorDateOfBirth = this.formatDate(this.doctor.doctorDateOfBirth);
       this.doctor.userIdentityNum = this.doctor.doctorIdentityNum;
       axios.post('http://localhost:8081/api/doctors/addDoctor', this.doctor)
@@ -210,5 +225,10 @@ export default {
 </script>
 
 <style scoped>
-
+span {
+  display: block;
+  background: #f9a5a5;
+  padding: 2px 5px;
+  color: #666;
+}
 </style>

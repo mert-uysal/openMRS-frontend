@@ -16,7 +16,7 @@
     </b-alert>
     <div class="card">
       <div class="card-header">
-        <span>Visit Bilgileri</span>
+        <span>Randevu Oluştur</span>
       </div>
       <div class="card-body">
         <sui-form>
@@ -28,7 +28,7 @@
                   placeholder="hasta"
                   search
                   selection
-                  v-model="visitObj.patientId"
+                  v-model="patient"
               />
             </sui-form-field>
             <sui-form-field>
@@ -38,39 +38,35 @@
                   placeholder="doktor"
                   search
                   selection
-                  v-model="visitObj.doctorId"
+                  v-model="doctor"
               />
             </sui-form-field>
           </sui-form-fields>
           <sui-form-fields fields="two">
             <sui-form-field>
-              <label>Visit Tarih ve Saat:</label>
+              <label>Randevu Tarih ve Saat:</label>
               <form action="">
-                <input type="datetime-local" id="visitdate" name="visitdate" v-model="visitObj.visitDate">
+                <input type="datetime-local" id="appointDate" name="appointDate" :min="dateTime"
+                       v-model="appointmentObj.appointmentDate">
               </form>
             </sui-form-field>
             <sui-form-field>
-              <label>Visit Detayı:</label>
-              <textarea id="visitDesc" name="visitDesc" rows="4" v-model="visitObj.visitDescription"></textarea>
+              <label>Departman</label>
+              <sui-dropdown
+                  :options="departments"
+                  placeholder="departmanlar"
+                  search
+                  selection
+                  v-model="appointmentObj.department"
+              />
             </sui-form-field>
           </sui-form-fields>
         </sui-form>
       </div>
       <div class="card-footer justify-content-center">
-        <button class="btn btn-secondary mt-2" @click="createPastVisit(); showAlert()">Geçmiş Visit Ekle</button>
-        <button class="btn btn-success mt-2" @click="createVisit(); showAlert()">Visit Oluştur</button>
+        <button class="btn btn-success mt-2" @click="createAppointment(); showAlert()">Randevu Oluştur</button>
       </div>
     </div>
-    <!--    <div class="card-footer">-->
-    <!--      <div class="form-group">-->
-    <!--        <label for="exampleSelectBorder">Hasta Selector</label>-->
-    <!--        <select class="custom-select form-control-border" id="exampleSelectBorder" placeholder="hasta seç">-->
-    <!--          <option v-for="patient in allPatients" :key="patient.id">-->
-    <!--            {{patient.patientIdentityNum}} - {{ patient.patientFirstName }} {{patient.patientLastName}}-->
-    <!--          </option>-->
-    <!--        </select>-->
-    <!--      </div>-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -78,18 +74,26 @@
 import axios from "axios";
 
 export default {
-  name: "createVisit",
+  name: "createAppointment",
   data() {
     return {
       allDoctors: [],
       allPatients: [],
-      visitObj: {
+      departments: [],
+      patient: "",
+      doctor: "",
+      appointmentObj: {
         patientId: "",
+        patientName: "",
         doctorId: "",
-        visitDate: "",
-        visitDescription: "",
-        visitStatus: true,
+        doctorName: "",
+        appointmentDate: "",
+        department: "",
+        appointmentStatus: true,
       },
+
+      dateTime: "",
+
       message: "",
       isProcessSuccessful: true,
       showNotify: false,
@@ -105,19 +109,40 @@ export default {
   created() {
     this.getAllPatients();
     this.getAllDoctors();
-    this.message = "Sadece Yatan Hastalar Seçilebilir!";
-    this.variant = this.warning;
-    this.showAlert();
+    this.getDepartments();
+  },
+  mounted() {
+    let today = new Date();
+    let dd = today.getDate();
+    let MM = today.getMonth() + 1;
+    let yyyy = today.getFullYear();
+    let hh = today.getHours();
+    let mm = today.getMinutes();
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+    if (MM < 10) {
+      MM = '0' + MM;
+    }
+    if(hh < 10) {
+      hh = '0' + hh;
+    }
+    if(mm < 10) {
+      mm = '0' + mm;
+    }
+    const date = yyyy + '-' + MM + '-' + dd;
+    const time = hh + ":" + mm;
+    this.dateTime = date + 'T' + time;
   },
   methods: {
     getAllPatients() {
-      axios.get("http://localhost:8081/api/patients/getAllinPatients")
+      axios.get("http://localhost:8081/api/patients/getAllPatients")
           .then((response) => {
-            this.showNotify = true;
+            console.log(response.data.message);
             this.allPatients = response.data.data;
             this.allPatients.forEach((patient, index) => {
               this.allPatients[index]['text'] = patient.patientIdentityNum + " - " + patient.patientFirstName + " " + patient.patientLastName;
-              this.allPatients[index]['value'] = patient.patientIdentityNum;
+              this.allPatients[index]['value'] = patient.patientIdentityNum + " - " + patient.patientFirstName + " " + patient.patientLastName;
             })
           })
           .catch(error => {
@@ -132,7 +157,7 @@ export default {
             this.allDoctors = response.data.data;
             this.allDoctors.forEach((doctor, index) => {
               this.allDoctors[index]['text'] = doctor.doctorIdentityNum + " - " + doctor.doctorFirstName + " " + doctor.doctorLastName;
-              this.allDoctors[index]['value'] = doctor.doctorIdentityNum;
+              this.allDoctors[index]['value'] = doctor.doctorIdentityNum + " - " + doctor.doctorFirstName + " " + doctor.doctorLastName;
             })
           })
           .catch(error => {
@@ -140,8 +165,28 @@ export default {
             console.log(error);
           });
     },
-    createVisit() {
-      axios.post("http://localhost:8081/api/visits/add", this.visitObj)
+    getDepartments() {
+      axios.get("http://localhost:8081/api/appointments/getDepartments")
+          .then((response) => {
+            this.departments = response.data;
+            this.departments.forEach((department, index) => {
+              this.departments[index]['text'] = department.departmentName;
+              this.departments[index]['value'] = department.departmentName;
+            })
+          })
+          .catch(error => {
+            console.log("getting deps failed.")
+            console.log(error);
+          });
+    },
+    createAppointment() {
+      const tempPatient = this.patient.split(" - ");
+      this.appointmentObj.patientId = tempPatient[0];
+      this.appointmentObj.patientName = tempPatient[1];
+      const tempDoctor = this.doctor.split(" - ");
+      this.appointmentObj.doctorId = tempDoctor[0];
+      this.appointmentObj.doctorName = tempDoctor[1];
+      axios.post("http://localhost:8081/api/appointments/add", this.appointmentObj)
           .then((response) => {
             if (response.data.success) {
               this.showNotify = true;
@@ -153,57 +198,16 @@ export default {
             this.showNotify = true;
             this.variant = this.danger;
             this.message = error;
-          })
-      this.visitObj.patientId = "";
-      this.visitObj.doctorId = "";
-      this.visitObj.visitDate = "";
-      this.visitObj.visitDescription = "";
-      this.visitObj.visitStatus = true;
-    },
-    createPastVisit() {
-      const today = new Date();
-      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-      const dateTime = date + ' ' + time;
-      if (this.visitObj.visitDate < dateTime) {
-        this.visitObj.visitStatus = false;
-        axios.post("http://localhost:8081/api/visits/add", this.visitObj)
-            .then((response) => {
-              if (response.data.success) {
-                this.showNotify = true;
-                this.variant = this.success;
-                this.message = "Geçmiş Visit Ekleme Başarılı.";
-              }
-            })
-            .catch(error => {
-              this.showNotify = true;
-              this.variant = this.danger;
-              this.message = error;
-            })
-      } else {
-        this.showNotify = true;
-        this.message = "Geçmiş visit için ileri bir tarih seçemezsiniz!!!"
-        this.variant = this.warning;
-      }
-      this.visitObj.patientId = "";
-      this.visitObj.doctorId = "";
-      this.visitObj.visitDate = "";
-      this.visitObj.visitDescription = "";
-      this.visitObj.visitStatus = true;
+          });
     },
     showAlert() {
+      this.showNotify = true;
       this.dismissCountDown = this.dismissSecs;
     },
     countDownChanged(dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
     },
-    temp() {
-      console.log(this.visitObj);
-      // let selectElement = document.querySelector('#exampleSelectBorder');
-      // let output = selectElement.options[selectElement.selectedIndex].value;
-      // console.log(output);
-    }
-  }
+  },
 }
 </script>
 

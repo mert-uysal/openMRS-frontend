@@ -39,14 +39,24 @@ const routes = [
         path: "/createVisit",
         name: "createVisit",
         component: () => import('./views/createVisit.vue'),
-        props: true,
     },
     {
         path: "/displayVisits",
         name: "displayVisits",
         component: () => import('./views/displayVisits.vue'),
+    },
+    {
+        path: "/createAppointment",
+        name: "createAppointment",
+        component: () => import('./views/createAppointment.vue'),
+    },
+    {
+        path: "/displayAppointments",
+        name: "displayAppointment",
+        component: () => import('./views/displayAppointment.vue'),
         props: true,
     },
+
 ];
 
 export const router = new VueRouter({

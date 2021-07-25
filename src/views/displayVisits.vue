@@ -28,7 +28,8 @@
         <sui-table-header>
           <sui-table-row>
             <sui-table-header-cell>Visit #</sui-table-header-cell>
-            <sui-table-header-cell>Hasta Bilgisi</sui-table-header-cell>
+            <sui-table-header-cell>Hasta TC</sui-table-header-cell>
+            <sui-table-header-cell>Hasta İsmi</sui-table-header-cell>
             <sui-table-header-cell>Doktor İsmi</sui-table-header-cell>
             <sui-table-header-cell>Visit Son Değiştirme Tarihi</sui-table-header-cell>
             <sui-table-header-cell>Visit Açıklaması</sui-table-header-cell>
@@ -37,8 +38,8 @@
           </sui-table-row>
         </sui-table-header>
 
-        <sui-table-body>
-          <sui-table-row v-for="(visit,index) in filteredRows" :key="visit.id">
+        <sui-table-body v-for="(visit,index) in filteredRows" :key="visit.id">
+          <sui-table-row v-if="visit.visitStatus" positive>
             <sui-table-cell>
               <sui-label ribbon type="button" class="id-button"
                          data-bs-toggle="modal" data-bs-target="#visitModal"
@@ -46,38 +47,59 @@
                 {{ visit.id }}
               </sui-label>
             </sui-table-cell>
-            <sui-table-cell>{{ visit.patientId }} - {{ visit.patientFirstName }} {{
-                visit.patientLastName
-              }}
-            </sui-table-cell>
+            <sui-table-cell>{{ visit.patientId }}</sui-table-cell>
+            <sui-table-cell>{{ visit.patientFirstName }} {{ visit.patientLastName }}</sui-table-cell>
             <sui-table-cell>{{ visit.doctorFirstName }} {{ visit.doctorLastName }}</sui-table-cell>
             <sui-table-cell>{{ visit.visitDate }}</sui-table-cell>
             <sui-table-cell>{{ visit.visitDescription }}</sui-table-cell>
-            <sui-table-cell v-if="visit.visitStatus">Aktif</sui-table-cell>
-            <sui-table-cell v-else>Kapalı</sui-table-cell>
+            <sui-table-cell v-if="visit.visitStatus">
+              <sui-icon name="check"/>
+              Aktif
+            </sui-table-cell>
+            <sui-table-cell v-else>
+              <sui-icon name="attention"/>
+              Kapalı
+            </sui-table-cell>
+            <sui-table-cell>{{ visit.visitCreateDate }}</sui-table-cell>
+          </sui-table-row>
+          <sui-table-row v-else warning>
+            <sui-table-cell>
+              <sui-label ribbon type="button" class="id-button"
+                         data-bs-toggle="modal" data-bs-target="#visitModal"
+                         @click="displayVisit(index)">
+                {{ visit.id }}
+              </sui-label>
+            </sui-table-cell>
+            <sui-table-cell>{{ visit.patientId }}</sui-table-cell>
+            <sui-table-cell>{{ visit.patientFirstName }} {{ visit.patientLastName }}</sui-table-cell>
+            <sui-table-cell>{{ visit.doctorFirstName }} {{ visit.doctorLastName }}</sui-table-cell>
+            <sui-table-cell>{{ visit.visitDate }}</sui-table-cell>
+            <sui-table-cell>{{ visit.visitDescription }}</sui-table-cell>
+            <sui-table-cell v-if="visit.visitStatus">
+              <sui-icon name="check"/>
+              Aktif
+            </sui-table-cell>
+            <sui-table-cell v-else>
+              <sui-icon name="attention"/>
+              Kapalı
+            </sui-table-cell>
             <sui-table-cell>{{ visit.visitCreateDate }}</sui-table-cell>
           </sui-table-row>
         </sui-table-body>
 
         <sui-table-footer>
           <sui-table-row>
-            <sui-table-header-cell colspan="7" class="position-relative">
-              <sui-menu v-sui-floated:right pagination>
-                <a is="sui-menu-item" icon>
-                  <sui-icon name="left chevron"/>
-                </a>
-                <a is="sui-menu-item">1</a>
-                <a is="sui-menu-item">2</a>
-                <a is="sui-menu-item">3</a>
-                <a is="sui-menu-item">4</a>
-                <a is="sui-menu-item" icon>
-                  <sui-icon name="right chevron"/>
-                </a>
-              </sui-menu>
-              <sui-button v-if="!isShowAll" class="position-absolute end-0 me-2" @click="showAllVisits()">
+            <sui-table-header-cell colspan="8">
+              <sui-button v-if="!isShowAll"
+                          floated="right"
+                          labeled
+                          @click="showAllVisits()">
                 Tüm Visitleri Göster
               </sui-button>
-              <sui-button v-else class="position-absolute end-0 me-2" @click="showAllVisits()">
+              <sui-button v-else
+                          floated="right"
+                          labeled
+                          @click="showAllVisits()">
                 Sadece Aktif Visitleri Göster
               </sui-button>
             </sui-table-header-cell>
@@ -181,7 +203,6 @@
             </sui-form>
           </div>
           <div class="modal-footer">
-            <button @click="temp()">bas</button>
             <div is="sui-button-group">
               <sui-button type="button" data-bs-dismiss="modal">Cancel</sui-button>
               <sui-button-or/>
@@ -233,7 +254,7 @@ export default {
     filteredRows() {
       return this.allVisits.filter(row => {
         const hastaBilgileri = row.patientId.toString().toLowerCase() + " " +
-            row.patientFirstName.toString().toLowerCase()+ " " + row.patientLastName.toString().toLowerCase();
+            row.patientFirstName.toString().toLowerCase() + " " + row.patientLastName.toString().toLowerCase();
         const doktorBilgisi = row.doctorFirstName.toString().toLowerCase() + row.doctorLastName.toString().toLowerCase();
         const visitAciklamasi = row.visitDescription.toString().toLowerCase();
         const searchTerm = this.filter.toLowerCase();
