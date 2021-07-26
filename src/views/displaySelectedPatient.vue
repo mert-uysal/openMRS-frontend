@@ -47,7 +47,7 @@
                   <label>Ad</label>
                   <input
                       type="text"
-                      :value="patientInfo.patientFirstName"
+                      v-model="patientInfo.patientFirstName"
                       :disabled="isEditable === false"
                   />
                 </sui-form-field>
@@ -55,7 +55,7 @@
                   <label>Soyad</label>
                   <input
                       type="text"
-                      :value="patientInfo.patientLastName"
+                      v-model="patientInfo.patientLastName"
                       :disabled="isEditable === false"
                   />
                 </sui-form-field>
@@ -65,9 +65,11 @@
               <sui-form-fields fields="two" class="ms-2 me-2">
                 <sui-form-field>
                   <label>Cinsiyet</label>
-                  <input
+                  <sui-dropdown
                       :disabled="isEditable === false"
-                      type="text"
+                      placeholder="Hasta Cinsiyeti"
+                      selection
+                      :options="gender"
                       v-model="patientInfo.patientGender"
                   />
                 </sui-form-field>
@@ -134,13 +136,19 @@
                 <button v-if="patientInfo.patientStatus === 'Yatan Hasta' "
                         class="btn btn-outline-primary p-2 bd-highlight mb-3 mt-3"
                         data-bs-toggle="modal" data-bs-target="#visitsModal" @click="showVisits()">
-                  <i class='bx bx-calendar-check bx-lg'></i>
                   Visitler
+                  <i class='bx bx-calendar-check bx-lg'></i>
                 </button>
                 <button class="btn btn-outline-primary p-2 bd-highlight mb-3"
                         data-bs-toggle="modal" data-bs-target="#appointmentsModal" @click="showAppointments()">
-                  <i class='bx bxs-calendar bx-lg'></i>
                   Randevular
+                  <i class='bx bxs-calendar bx-lg'></i>
+                </button>
+                <button v-if="patientInfo.patientStatus === 'Yatan Hasta' "
+                        class="btn btn-outline-primary p-2 bd-highlight mb-3"
+                        data-bs-toggle="modal" data-bs-target="#addVisitModal" @click="getAllDoctors()">
+                  Visit Ekle
+                  <i class='bx bx-calendar-plus bx-lg'></i>
                 </button>
               </div>
               <div class="col-4 align-self-center">
@@ -162,7 +170,6 @@
                 @click="changeEditable()">
             <span class="material-icons">edit_note</span>
           </span>
-          <button @click="temp()">bas</button>
         </div>
       </div>
     </div>
@@ -223,11 +230,25 @@
     </div>
     <!-- Visit modal -->
     <div class="modal fade" id="visitsModal" tabindex="-1" aria-labelledby="changesModalLabel" aria-hidden="true">
+      <b-alert v-if="showNotifyVisits" class="mt-3 position-absolute top-0 end-0"
+               :show="dismissCountDown"
+               dismissible
+               :variant="variant"
+               @dismissed="dismissCountDown=0"
+               @dismiss-count-down="countDownChanged">
+        <p>{{ message }}</p>
+        <b-progress
+            v-if="isProcessSuccessful"
+            :variant="variant"
+            :max="dismissSecs"
+            :value="dismissCountDown"
+            height="4px"></b-progress>
+      </b-alert>
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <p>{{ patientInfo.patientIdentityNum }} - {{ patientInfo.patientFirstName }}
-              {{ patientInfo.patientLastName }}</p>
+            <p><b>{{ patientInfo.patientIdentityNum }} - {{ patientInfo.patientFirstName }}
+              {{ patientInfo.patientLastName }}</b></p>
             <h5 class="modal-title" id="visitsModalLabel"></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -301,13 +322,103 @@
         </div>
       </div>
     </div>
-    <!-- randevu modal -->
-    <div class="modal fade" id="appointmentsModal" tabindex="-1" aria-labelledby="changesModalLabel" aria-hidden="true">
+    <!-- visit ekle modal-->
+    <div class="modal fade" id="addVisitModal" tabindex="-1" aria-labelledby="changesModalLabel" aria-hidden="true">
+      <b-alert v-if="showNotifyaddVisit" class="mt-3 position-absolute top-0 end-0"
+               :show="dismissCountDown"
+               dismissible
+               :variant="variant"
+               @dismissed="dismissCountDown=0"
+               @dismiss-count-down="countDownChanged">
+        <p>{{ message }}</p>
+        <b-progress
+            v-if="isProcessSuccessful"
+            :variant="variant"
+            :max="dismissSecs"
+            :value="dismissCountDown"
+            height="4px"></b-progress>
+      </b-alert>
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <p>{{ patientInfo.patientIdentityNum }} - {{ patientInfo.patientFirstName }}
-              {{ patientInfo.patientLastName }}</p>
+            <p><b>{{ patientInfo.patientIdentityNum }} - {{ patientInfo.patientFirstName }}
+              {{ patientInfo.patientLastName }}</b></p>
+            <h5 class="modal-title" id="addVisitModalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body mt-3">
+            <div class="card">
+              <div class="card-header">
+                <span>Visit Bilgileri</span>
+              </div>
+              <div class="card-body">
+                <sui-form>
+                  <sui-form-fields fields="two">
+                    <sui-form-field>
+                      <label>Hasta:</label>
+                      <input
+                          disabled
+                          :value="patientInfo.patientIdentityNum + ' - ' + patientInfo.patientFirstName + ' ' +
+                           patientInfo.patientLastName "
+                      />
+                    </sui-form-field>
+                    <sui-form-field>
+                      <label>Doktor Seçin</label>
+                      <sui-dropdown
+                          :options="allDoctors"
+                          placeholder="doktor"
+                          search
+                          selection
+                          v-model="visitObj.doctorId"
+                      />
+                    </sui-form-field>
+                  </sui-form-fields>
+                  <sui-form-fields fields="two">
+                    <sui-form-field>
+                      <label>Visit Tarih ve Saat:</label>
+                      <form action="">
+                        <input type="datetime-local" id="visitDate" name="visitDate" v-model="visitObj.visitDate">
+                      </form>
+                    </sui-form-field>
+                    <sui-form-field>
+                      <label>Visit Detayı:</label>
+                      <textarea id="visitDesc" name="visitDesc" rows="4" v-model="visitObj.visitDescription"></textarea>
+                    </sui-form-field>
+                  </sui-form-fields>
+                </sui-form>
+              </div>
+              <div class="card-footer justify-content-center">
+                <button class="btn btn-success mt-2" @click="addVisit(); showAlert()">Visit Ekle</button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- randevu modal -->
+    <div class="modal fade" id="appointmentsModal" tabindex="-1" aria-labelledby="changesModalLabel" aria-hidden="true">
+      <b-alert v-if="showNotifyAppointment" class="mt-3 position-absolute top-0 end-0"
+               :show="dismissCountDown"
+               dismissible
+               :variant="variant"
+               @dismissed="dismissCountDown=0"
+               @dismiss-count-down="countDownChanged">
+        <p>{{ message }}</p>
+        <b-progress
+            v-if="isProcessSuccessful"
+            :variant="variant"
+            :max="dismissSecs"
+            :value="dismissCountDown"
+            height="4px"></b-progress>
+      </b-alert>
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <p><b>{{ patientInfo.patientIdentityNum }} - {{ patientInfo.patientFirstName }}
+              {{ patientInfo.patientLastName }}</b></p>
             <h5 class="modal-title" id="appointmentsModalLabel"></h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -432,11 +543,32 @@ export default {
           value: "Ayakta Tedavi",
         },
       ],
+      gender: [
+        {
+          text: 'Erkek',
+          value: 'E',
+        },
+        {
+          text: 'Kadın',
+          value: 'K',
+        },
+      ],
+
+      visitObj: {
+        patientId: "",
+        doctorId: "",
+        visitDate: "",
+        visitDescription: "",
+        visitStatus: true,
+      },
+      allDoctors: [],
 
       message: "",
       isProcessSuccessful: true,
       showNotify: false,
-      showNotifyModal: false,
+      showNotifyVisits: false,
+      showNotifyaddVisit: false,
+      showNotifyAppointment: false,
       dismissSecs: 3,
       dismissCountDown: 0,
       variant: "",
@@ -517,6 +649,7 @@ export default {
     showVisits() {
       axios.post("http://localhost:8081/api/visits/getPatientVisitById?id=" + this.patientInfo.patientIdentityNum)
           .then((response) => {
+            this.showNotifyVisits = true;
             this.showAlert();
             this.patientVisits = response.data.data;
             this.message = response.data.message;
@@ -531,9 +664,48 @@ export default {
             this.message = error;
           })
     },
+    getAllDoctors() {
+      axios.get("http://localhost:8081/api/doctors/getAllDoctors")
+          .then((response) => {
+            console.log(response.data.message);
+            this.allDoctors = response.data.data;
+            this.allDoctors.forEach((doctor, index) => {
+              this.allDoctors[index]['text'] = doctor.doctorIdentityNum + " - " + doctor.doctorFirstName + " " + doctor.doctorLastName;
+              this.allDoctors[index]['value'] = doctor.doctorIdentityNum;
+            })
+          })
+          .catch(error => {
+            console.log("getting all doctors failed.")
+            console.log(error);
+          });
+    },
+    addVisit() {
+      const today = new Date();
+      const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+      const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+      const dateTime = date + ' ' + time;
+      if (this.visitObj.visitDate < dateTime) {
+        this.visitObj.visitStatus = false;
+      }
+      this.visitObj.patientId = this.patientInfo.patientIdentityNum;
+      axios.post("http://localhost:8081/api/visits/add", this.visitObj)
+          .then((response) => {
+            if (response.data.success) {
+              this.showNotifyaddVisit = true;
+              this.variant = this.success;
+              this.message = response.data.message;
+            }
+          })
+          .catch(error => {
+            this.showNotify = true;
+            this.variant = this.danger;
+            this.message = error;
+          })
+    },
     showAppointments() {
       axios.post("http://localhost:8081/api/appointments/getPatientAppointmentById?id=" + this.patientInfo.patientIdentityNum)
           .then((response) => {
+            this.showNotifyAppointment = true;
             this.showAlert();
             this.patientAppointments = response.data.data;
             this.message = response.data.message;
@@ -549,7 +721,7 @@ export default {
           })
     },
     showAlert() {
-      this.showNotify = true;
+
       this.dismissCountDown = this.dismissSecs;
     },
     countDownChanged(dismissCountDown) {

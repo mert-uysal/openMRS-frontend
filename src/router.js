@@ -56,6 +56,12 @@ const routes = [
         component: () => import('./views/displayAppointment.vue'),
         props: true,
     },
+    {
+        path: "/profile",
+        name: "profile",
+        component: () => import('./views/profile.vue'),
+        props: true,
+    },
 
 ];
 

@@ -276,7 +276,8 @@ export default {
           .catch(error => {
             console.log('Submit Fail')
             this.variant = this.danger;
-            this.message = error;
+            console.log(error);
+            this.message = "Bu Kimlik Numarası Zaten Mevcut";
           });
       this.patient.patientIdentityNum = "";
       this.patient.patientFirstName = "";

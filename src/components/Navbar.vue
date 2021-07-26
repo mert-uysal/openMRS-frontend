@@ -18,11 +18,11 @@
                  href="#" id="navbarDropdown" role="button"
                  data-bs-toggle="dropdown" aria-expanded="false">
                 <span style="color: white"> {{ userData.doctorFirstName }} {{userData.doctorLastName}} </span>
-                <i class="fas fa-user-md fa-2x ms-2 me-1"></i>
+                <i class="fas fa-user-md ms-2 me-1" style="font-size: 22px"></i>
               </a>
               <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-<!--                <li><a class="dropdown-item" href="#"-->
-<!--                       @click.prevent="this.$router.push('/profile')">My Profile</a></li>-->
+                <li><a class="dropdown-item" href="#"
+                       @click.prevent="$router.push('/profile')">My Profile</a></li>
                 <li><a
                     class="dropdown-item dropdown-logout"
                     data-bs-toggle="modal"
