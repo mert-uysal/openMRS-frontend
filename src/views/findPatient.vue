@@ -51,7 +51,7 @@
             <sui-table-cell>{{ patient.patientDateOfBirt }}</sui-table-cell>
             <sui-table-cell>
               <a href="#" class="action-button text-danger"
-                 data-bs-toggle="modal" data-bs-target="#deleteModal">
+                 data-bs-toggle="modal" data-bs-target="#deleteModal" @click="catchPatient(patient)">
                 <span class="material-icons">delete</span>
               </a>
             </sui-table-cell>
@@ -96,7 +96,7 @@
           </div>
           <div class="modal-footer justify-content-center">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-            <button type="button" class="btn btn-danger" @click="deletePatient(); showAlert()">Sil</button>
+            <button type="button" class="btn btn-danger" @click="deletePatient()">Sil</button>
           </div>
         </div>
       </div>
@@ -113,6 +113,7 @@ export default {
     return {
       patientId: "",
       allPatientsList: [],
+      patientInfo: {},
       filter: "",
       isShowAll: true,
       isShowInPatient: true,
@@ -250,6 +251,9 @@ export default {
         params: {id: patientId},
       });
     },
+    catchPatient(patient) {
+      this.patientInfo = patient;
+    },
     deletePatient() {
       axios.post("http://localhost:8081/api/patients/delete", this.patientInfo)
           .then((response) => {
@@ -265,6 +269,7 @@ export default {
             this.variant = this.danger;
             this.message = error;
           })
+      location.reload();
     },
     showAlert() {
       this.dismissCountDown = this.dismissSecs;

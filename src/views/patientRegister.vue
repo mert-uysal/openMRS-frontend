@@ -88,7 +88,7 @@
               </sui-form-field>
               <sui-form-field>
                 <label>Doğum Tarihi</label>
-                <date-dropdown min="1900" v-model="patient.patientDateOfBirt"/>
+                <date-dropdown min="1945" v-model="patient.patientDateOfBirt"/>
               </sui-form-field>
             </sui-form-fields>
             <sui-form-fields fields="one" class="justify-content-center ms-3 me-2">
